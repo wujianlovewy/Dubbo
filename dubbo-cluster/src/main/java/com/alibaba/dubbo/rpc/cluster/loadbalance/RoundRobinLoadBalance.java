@@ -31,6 +31,13 @@ import java.util.concurrent.ConcurrentMap;
  *
  * @author qian.lei
  * @author william.liangf
+ * https://github.com/alibaba/dubbo/pull/14 2.5.3之前bug
+ *  修正weightSequence过快增长导致的高权重机器调用过多问题。
+	currentWeight本应为每轮加一，但原错写为每次调用加一。
+	设有两台机器权重分别为1和2，设计应为第一轮分别执行一次，第二轮在第二台执行一次。
+	但原算法为第一轮各有1/2的机会执行一次，第二轮在第二台执行一次。
+	造成高权重机器被调用次数过多。
+	修正为每次检查sequence完成一轮后才增加currentWeight。
  */
 public class RoundRobinLoadBalance extends AbstractLoadBalance {
 
